@@ -47,7 +47,6 @@ namespace Kosilek.Data
             characterData.damage = EditorGUILayout.IntField("Damage", characterData.damage);
             characterData.delayInPreparation = EditorGUILayout.FloatField("Delay In Preparation", characterData.delayInPreparation);
             characterData.attackTime = EditorGUILayout.FloatField("Attack Time", characterData.attackTime);
-            characterData.delayInChangingWeapons = EditorGUILayout.FloatField("Delay In Changing Weapons", characterData.delayInChangingWeapons);
 
             if (characterData.playerType == PlayerType.AI)
             {
@@ -62,6 +61,7 @@ namespace Kosilek.Data
             }
             else
             {
+                characterData.delayInChangingWeapons = EditorGUILayout.FloatField("Delay In Changing Weapons", characterData.delayInChangingWeapons);
                 characterData.delayAttackMeele = EditorGUILayout.FloatField("Meele Delay", characterData.delayAttackMeele);
                 characterData.delayAttackRange = EditorGUILayout.FloatField("Range Delay", characterData.delayAttackRange);
             }

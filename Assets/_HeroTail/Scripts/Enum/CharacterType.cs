@@ -15,6 +15,9 @@ namespace Kosilek.Enum
     public enum NPCType
     {
         FireFlower,
-        Cactus
+        FlowerHipi,
+        MusicFlower,
+        RoboFlower,
+        YellowFlower
     }
 }

@@ -1,5 +1,6 @@
 using Kosilek.Data;
 using Kosilek.Enum;
+using Kosilek.Manager;
 using Kosilek.UI;
 using System;
 using System.Collections;
@@ -16,31 +17,36 @@ namespace Kosilek.Characters
         #endregion end Data
 
         #region ScriptsComponent
-        [SerializeField] private CharacterUI characterUI;
-        [SerializeField] private Health health;
+        [SerializeField] internal CharacterUI characterUI;
+        [SerializeField] internal Health health;
         #endregion end ScriptsComponent
+
+        #region Controll Battle
+        internal bool isBattle = false;
+        #endregion
 
         #region Main State
         protected PlayerType playerType;
         protected CharacterType selectedWeapons;
         protected string characterName;
-        protected float armor;
-        protected float damage;
+        protected int armor;
+        protected int damage;
         protected float delayInPreparation;
         protected float attackTime;
         protected float delayInChangingWeapons;
         protected float delayAttackMeele; //Player and AI
         protected float delayAttackRange; // Player and AI
         protected CharacterType characterType; //AI
-        protected int chanceOfAppearance; // AI
+        internal int chanceOfAppearance; // AI
         #endregion end Main State
 
         #region List Action
         private List<(float delay, string actionName, Action action)> actionSequence;
+        private Action callAttack;
         #endregion
 
         #region Coroutine
-        protected Coroutine coroutineActionDelay;
+        internal Coroutine coroutineActionDelay;
         #endregion end Coroutine
 
         #region Animator
@@ -54,17 +60,28 @@ namespace Kosilek.Characters
         private const string HEALING = "Healing";
         #endregion
 
+        #region Canvas
+        [SerializeField] private Canvas gameCanvasCharacter;
+        #endregion
+
+        #region Only Player
+        public float timerPreparation = 0f;
+        internal bool isPreparation = false;
+        internal bool isTimeAttack = false;
+        public bool isChangingWeapon = false;
+        #endregion
+
         #region Awake
         protected virtual void Awake()
         {
-            InitializationCharactersData();
+            gameCanvasCharacter.worldCamera = CanvasManager.Instance.MainCamera;
         }
 
-        private void InitializationCharactersData()
+        internal void InitializationCharactersData(bool isStart)
         {
             playerType = characterData.playerType;
             characterName = characterData.characterName;
-            health.InitializationCharactersData(characterData.health);
+            health.InitializationCharactersData(characterData.health, isStart);
             armor = characterData.armor;
             damage = characterData.damage;
             delayInPreparation = characterData.delayInPreparation;
@@ -84,38 +101,159 @@ namespace Kosilek.Characters
 
         #region Action Character
 
-        protected void ActionCharacter()
+        internal virtual void StartBattle()
         {
+            Action action;
+            if (playerType == PlayerType.Playe)
+                action = selectedWeapons == CharacterType.Melee ? StartAnimMeeleAttack : StartAnimRangeAttack;
+            else
+                action = characterType == CharacterType.Melee ? StartAnimMeeleAttack : StartAnimRangeAttack;
+
+                ActionCharacter(action);
+        }
+
+        internal virtual void StartBattle(List<(float, string, Action)> listAction)
+        {
+            Action action;
+            if (playerType == PlayerType.Playe)
+                action = selectedWeapons == CharacterType.Melee ? StartAnimMeeleAttack : StartAnimRangeAttack;
+            else
+                action = characterType == CharacterType.Melee ? StartAnimMeeleAttack : StartAnimRangeAttack;
+
+            ActionCharacter(action, listAction);
+        }
+
+        protected void ActionCharacter(Action action)
+        {
+            var delayAttack = 0f;
+            callAttack = null;
+            callAttack = action;
+            delayAttack = selectedWeapons == CharacterType.Melee ? delayAttack = delayAttackMeele : delayAttack = delayAttackRange;
             actionSequence = new List<(float, string, Action)>
             {
-                (delayInPreparation, "Preparation", null),
-                (attackTime, "Preparing for the attack", null),
+                (0f, "Preparation", ActiveGameOvbjectImage),
+                (delayInPreparation, "Preparation", ActionPreparing),
+                (attackTime, "Preparing for the attack", ActionTimeAttack),
+                (delayAttack, "Preparing for the attack", EndActionList),
+                (0f, "DamageObject", DamageObject)
             };
 
             StartCoroutine(IE());
 
             IEnumerator IE()
             {
-                foreach (var (delay, actionName, action) in actionSequence)
+                while (isBattle)
                 {
-                    if (coroutineActionDelay != null)
-                        StopCoroutine(coroutineActionDelay);
+                    foreach (var (delay, actionName, action) in actionSequence)
+                    {
+                        if (coroutineActionDelay != null)
+                            StopCoroutine(coroutineActionDelay);
 
-                    yield return coroutineActionDelay = StartCoroutine(IEDelayAction(delay, actionName, characterUI.image, action));
+                        yield return coroutineActionDelay = StartCoroutine(IEDelayAction(delay, actionName, characterUI.image, action, null));
+                    }
+
+                    OnActionCompleted();
                 }
-
-                OnActionCompleted();
             }
         }
-        private IEnumerator IEDelayAction(float delay, string nameAction, Image image, Action action)
+
+        internal void ActionPreparing()
         {
-            action?.Invoke();
+            characterUI.typeActionImageColor.color = characterUI.colorPreparation;
+            isPreparation = true;
+            isTimeAttack = false;
+            isChangingWeapon = false;
+        }
+
+        private void ActionTimeAttack()
+        {
+            characterUI.typeActionImageColor.color = characterUI.colorTimeAttack;
+            isPreparation = false;
+            isTimeAttack = true;
+            isChangingWeapon = false;
+        }
+
+        protected void ActionCharacter(Action action, List<(float, string, Action)> listAction)
+        {
+            var delayAttack = 0f;
+            callAttack = null;
+            callAttack = action;
+            delayAttack = selectedWeapons == CharacterType.Melee ? delayAttack = delayAttackMeele : delayAttack = delayAttackRange;
+            actionSequence = listAction;
+
+            StartCoroutine(IE());
+
+            IEnumerator IE()
+            { 
+                while (isBattle)
+                {
+                    foreach (var (delay, actionName, action) in actionSequence)
+                    {
+                        if (coroutineActionDelay != null)
+                            StopCoroutine(coroutineActionDelay);
+
+                        yield return coroutineActionDelay = StartCoroutine(IEDelayAction(delay, actionName, characterUI.image, action, null));
+                    }
+
+                    OnActionCompleted();
+                }
+            }
+        }
+
+        protected List<(float, string, Action)> GetListActionPreparing(float delayAttack)
+        {
+            var actionSequence = new List<(float, string, Action)>
+            {
+                (delayInPreparation, "Preparation", ActionPreparing),
+                (attackTime, "Preparing for the attack", ActionTimeAttack),
+                (delayAttack, "Preparing for the attack", EndActionList),
+                (0f, "DamageObject", DamageObject),
+                (0f, "Preparation", ActiveGameOvbjectImage),
+            };
+            return actionSequence;
+        }
+
+        protected List<(float, string, Action)> GetListActionTimeAttack(float delayAttack)
+        {
+            var actionSequence = new List<(float, string, Action)>
+            {
+                (attackTime, "Preparing for the attack", ActionTimeAttack),
+                (delayAttack, "Preparing for the attack", EndActionList),
+                (0f, "DamageObject", DamageObject),
+                (0f, "Preparation", ActiveGameOvbjectImage),
+                (delayInPreparation, "Preparation", ActionPreparing)
+            };
+            return actionSequence;
+        }
+
+        internal IEnumerator IEDelayAction(float delay, string nameAction, Image image, Action call, Action endCall)
+        {
+            call?.Invoke();
+           // Debug.Log(" = isChangingWeapon = " + isChangingWeapon " ");
             for (float i = 0; i < delay; i += Time.deltaTime)
             {
+                if (!isChangingWeapon)
+                    timerPreparation = i;
                 image.fillAmount = i / delay;
                 yield return null;
             }
+            endCall?.Invoke();
+            coroutineActionDelay = null;
+        }
 
+        internal IEnumerator IEDelayAction(float startValue ,float delay, string nameAction, Image image, Action call, Action endCall)
+        {
+            call?.Invoke();
+            // Debug.Log(" = isChangingWeapon = " + isChangingWeapon " ");
+            for (float i = startValue; i < delay; i += Time.deltaTime)
+            {
+                if (!isChangingWeapon)
+                    timerPreparation = i;
+                image.fillAmount = i / delay;
+                yield return null;
+            }
+            endCall?.Invoke();
+            timerPreparation = 0f;
             coroutineActionDelay = null;
         }
 
@@ -124,45 +262,53 @@ namespace Kosilek.Characters
 
         }
 
-        private void ActiveGameOvbjectImage() => characterUI.ActiveGameObjectImage(true);
-        private void UnActiveGameOvbjectImage() => characterUI.ActiveGameObjectImage(false);
+        private void ActiveGameOvbjectImage()
+        {
+            characterUI.ActiveGameObjectImage(true);
+            CanvasManager.Instance.gameCanvas.changingWeaponsButton.interactable = true;
+        }
+
+        private void UnActiveGameOvbjectImage()
+        {
+            characterUI.ActiveGameObjectImage(false);
+        }
+
+
+        private void EndActionList()
+        {
+            UnActiveGameOvbjectImage();
+            CanvasManager.Instance.gameCanvas.changingWeaponsButton.interactable = false;
+            callAttack?.Invoke();
+        }
         #endregion end Action Character
 
-        #region Test
+        #region Animation
+        protected void StartAnimMeeleAttack() => animator.SetTrigger(MEELE);
 
-        public void TestFight()
+        protected void StartAnimRangeAttack() => animator.SetTrigger(RANGE);
+
+        internal void StartAnimRangeHIT() => animator.SetTrigger(HIT);
+        #endregion
+
+        private void DamageObject()
         {
-            var delayAttack = 0f;
-            delayAttack = selectedWeapons == CharacterType.Melee ? delayAttack = delayAttackMeele : delayAttack = delayAttackRange;
-            actionSequence = new List<(float, string, Action)>
-            {
-                (0f, "Preparation", ActiveGameOvbjectImage),
-                (delayInPreparation, "Preparation", null),
-                (attackTime, "Preparing for the attack", null),
-                (delayAttack, "Preparing for the attack", UnActiveGameOvbjectImage)
-            };
-
-            StartCoroutine(IE());
-
-            IEnumerator IE()
-            {
-                var a = 1;
-                while (a > 0)
-                {
-                    foreach (var (delay, actionName, action) in actionSequence)
-                    {
-                        if (coroutineActionDelay != null)
-                            StopCoroutine(coroutineActionDelay);
-
-                        yield return coroutineActionDelay = StartCoroutine(IEDelayAction(delay, actionName, characterUI.image, action));
-                    }
-
-                    OnActionCompleted();
-                }
-
-              
-            }
+            Action action = playerType == PlayerType.Playe ? DamageEnemy : DamagePlayer;
+            action?.Invoke();
+            action = playerType == PlayerType.Playe ? LevelManager.Instance.enemy.StartAnimRangeHIT : LevelManager.Instance.player.StartAnimRangeHIT;
+            action.Invoke();
         }
+
+        private void DamagePlayer()
+        {
+            LevelManager.Instance.player.health.Damage(damage, LevelManager.Instance.player.armor, PlayerType.Playe);
+        }
+
+        private void DamageEnemy()
+        {
+            LevelManager.Instance.enemy.health.Damage(damage, LevelManager.Instance.enemy.armor, PlayerType.AI);
+        }
+
+        #region Test
 
         
         #endregion

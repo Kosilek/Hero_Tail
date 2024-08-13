@@ -18,16 +18,17 @@ namespace Kosilek.UI
         #region Const
         private const float SPEED_UPDATE_IMAGE_HEALTH = 1f;
         #endregion
-
-        public void InitializationCharactersData(int health, int maxHealth)
+        
+        public void InitializationCharactersData(int health, int maxHealth, bool isStart)
         {
-            UpdateHealthUI(health, maxHealth, false);
+            UpdateHealthUI(health, maxHealth, false, isStart);
         }
 
-        public void UpdateHealthUI(int health, int maxHealth, bool isDamage)
+        public void UpdateHealthUI(int health, int maxHealth, bool isDamage, bool isStart)
         {
             UpdateCountHealthText(health, maxHealth);
-            UpdateImageHealthBar(health, maxHealth, isDamage);
+            if (!isStart)
+                UpdateImageHealthBar(health, maxHealth, isDamage);
         }
 
         private void UpdateCountHealthText(int health, int maxHealth)
@@ -46,26 +47,22 @@ namespace Kosilek.UI
 
         private IEnumerator IEUpdateImageBarDamage(float fillAmount)
         {
-            Debug.Log("hpBar.fillAmount = " + hpBar.fillAmount + " FillAmount = " + fillAmount);
             for (float i = hpBar.fillAmount; i >= fillAmount; i -= Time.deltaTime * SPEED_UPDATE_IMAGE_HEALTH)
             {
                 hpBar.fillAmount = i;
                 yield return null;
             }
-            Debug.Log("End coro = " + " FillAmount = " + fillAmount);
             hpBar.fillAmount = fillAmount;
             coroutineUpdateHpBar = null;
         }
 
         private IEnumerator IEUpdateImageBarHealing(float fillAmount)
         {
-            Debug.Log("hpBar.fillAmount = " + hpBar.fillAmount + " FillAmount = " + fillAmount);
             for (float i = hpBar.fillAmount; i <= fillAmount; i += Time.deltaTime * SPEED_UPDATE_IMAGE_HEALTH)
             {
                 hpBar.fillAmount = i;
                 yield return null;
             }
-            Debug.Log("End coro = " + " FillAmount = " + fillAmount);
             hpBar.fillAmount = fillAmount;
             coroutineUpdateHpBar = null;
         }

@@ -1,7 +1,10 @@
+using Kosilek.Enum;
+using Kosilek.Manager;
 using Kosilek.UI;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements.Experimental;
 
 
 namespace Kosilek.Characters
@@ -13,35 +16,66 @@ namespace Kosilek.Characters
 
         [SerializeField] HealthUI healthUI;
 
-        public void InitializationCharactersData(int health)
+        internal void InitializationCharactersData(int health, bool isStart)
         {
             maxHealth = health;
             this.health = health;
-            healthUI.InitializationCharactersData(health, maxHealth);
+            healthUI.InitializationCharactersData(health, maxHealth, isStart);
         }
 
-        public void Damage(int damage)
+        internal void Damage(int damage, int armor, PlayerType playerType)
         {
-            if (damage > health)
-                Death();
+            if (damage - armor <= 0)
+                damage = 1;
+            else damage -= armor;
 
+          //  Debug.Log("health = " + health + " damage = " + damage);
+
+            if (damage >= health)
+            {
+                health = 0;
+                Death(playerType);
+            }
             else
                 health -= damage;
-            healthUI.UpdateHealthUI(health, maxHealth, true);
+            healthUI.UpdateHealthUI(health, maxHealth, true, false);
         }
 
-        public void Healing(int healing)
+        internal void Healing(int healing)
         {
             if (health + healing >= maxHealth)
                 health = maxHealth;
             else
                 health += healing;
-            healthUI.UpdateHealthUI(health, maxHealth, false);
+            healthUI.UpdateHealthUI(health, maxHealth, false, false);
         }
 
-        public void Death()
+        public void Healing()
         {
+            health = maxHealth;
+            healthUI.UpdateHealthUI(health, maxHealth, false, false);
+        }
 
+        private void Death(PlayerType playerType)
+        {
+            LevelManager.Instance.StopBattle();
+
+            StartCoroutine(IE());
+
+            IEnumerator IE()
+            {
+                yield return new WaitForSeconds(.5f);
+                if (playerType == PlayerType.AI)
+                {
+                    LevelManager.Instance.DestroyCharacters(LevelManager.Instance.enemy);
+                }
+                else
+                {
+                    LevelManager.Instance.DestroyCharacters(LevelManager.Instance.enemy);
+                    LevelManager.Instance.DestroyCharacters(LevelManager.Instance.player);
+                    CanvasManager.Instance.respawnCanvas.Open();
+                }
+            }
         }
     }
 }

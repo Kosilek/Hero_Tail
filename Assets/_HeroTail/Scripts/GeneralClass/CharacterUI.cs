@@ -8,9 +8,14 @@ namespace Kosilek.UI
     public class CharacterUI : MonoBehaviour
     {
         public GameObject typeActionImage;
+        public Image typeActionImageColor;
         public GameObject delayImage;
 
         public Image image;
+
+        public Color colorPreparation;
+        public Color colorTimeAttack;
+        public Color colorChangingWeapon;
 
         internal void ActiveGameObjectImage(bool state)
         {
