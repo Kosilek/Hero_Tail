@@ -1,4 +1,5 @@
 using Kosilek.Characters;
+using Kosilek.Data;
 using Kosilek.Struct;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ namespace Kosilek.Manager
     {
         public PlayerCntr player;
         public List<ContainerEnemy> containerEnemy;
+        public List<Item> items;
 
         protected override void Awake()
         {

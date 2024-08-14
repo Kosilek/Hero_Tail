@@ -15,6 +15,8 @@ namespace Kosilek.Manager
         public Spawn spawnPlayer;
         public Spawn spawnEnemy;
 
+        internal Item dropItem;
+
         private void Start()
         {
             spawnPlayer.SpawnCharacters();

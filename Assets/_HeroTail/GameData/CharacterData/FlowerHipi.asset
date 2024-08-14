@@ -12,3 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2585b25d95d33924abc46193684c7529, type: 3}
   m_Name: FlowerHipi
   m_EditorClassIdentifier: 
+  playerType: 1
+  characterName: 
+  health: 17
+  armor: 4
+  damage: 10
+  delayInPreparation: 3
+  attackTime: 2
+  delayInChangingWeapons: 0
+  delayAttackMeele: 2
+  delayAttackRange: 0
+  characterType: 0
+  chanceOfAppearance: 45
+  npcType: 0
+  XP: 8

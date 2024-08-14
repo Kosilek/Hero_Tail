@@ -1222,6 +1222,7 @@ GameObject:
   - component: {fileID: 9210034889679901238}
   - component: {fileID: 9210034889679901233}
   - component: {fileID: 9210034889679901236}
+  - component: {fileID: 5574213252631581682}
   m_Layer: 0
   m_Name: Characters_Knight
   m_TagString: Untagged
@@ -1268,6 +1269,7 @@ MonoBehaviour:
   gameCanvasCharacter: {fileID: 771952636764609312}
   timerPreparation: 0
   isChangingWeapon: 0
+  exp: {fileID: 5574213252631581682}
 --- !u!114 &9210034889679901238
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1321,6 +1323,22 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &5574213252631581682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9210034889679901235}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2800088c3e1e248439eafad72dcc11d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  xpData: {fileID: 11400000, guid: ca8262a4093f5a14c95e5c6028a2d5e8, type: 2}
+  xp: 0
+  maxXp: 10
+  level: 1
 --- !u!1 &9210034889715595059
 GameObject:
   m_ObjectHideFlags: 0

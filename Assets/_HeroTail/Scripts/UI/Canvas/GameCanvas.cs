@@ -17,6 +17,10 @@ namespace Kosilek.UI
         private Button admitDefeatButton;
         [SerializeField]
         internal Button changingWeaponsButton;
+        [SerializeField]
+        internal Button addItemButton;
+        [SerializeField]
+        internal Button inventoryButton;
 
         public Image iconButton;
         public Sprite meeleSprite;
@@ -35,6 +39,8 @@ namespace Kosilek.UI
             healingButton.onClick.AddListener(ActionHealingButton);
             admitDefeatButton.onClick.AddListener(ActionAdmitDefeat);
             changingWeaponsButton.onClick.AddListener(ActionChangingWeapons);
+            addItemButton.onClick.AddListener(ActionAddItemButton);
+            inventoryButton.onClick.AddListener(ActionInventoryButton);
         }
 
         private void ActionStartBattle()
@@ -56,6 +62,18 @@ namespace Kosilek.UI
         private void ActionChangingWeapons()
         {
             LevelManager.Instance.player.ChangingWeapons();
+        }
+
+        private void ActionAddItemButton()
+        {
+            CanvasManager.Instance.inventoryCanvas.AddItemList(LevelManager.Instance.dropItem);
+            addItemButton.gameObject.SetActive(false);
+            Destroy(LevelManager.Instance.dropItem.gameObject);
+        }
+
+        private void ActionInventoryButton()
+        {
+            CanvasManager.Instance.inventoryCanvas.Open();
         }
         #endregion end Awake
         internal void IdleCanvas()

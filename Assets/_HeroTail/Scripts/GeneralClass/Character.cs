@@ -5,6 +5,7 @@ using Kosilek.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,7 +14,7 @@ namespace Kosilek.Characters
     public class Character : MonoBehaviour
     {
         #region Data
-        [SerializeField] private CharacterData characterData;
+        [SerializeField] internal CharacterData characterData;
         #endregion end Data
 
         #region ScriptsComponent
@@ -29,8 +30,8 @@ namespace Kosilek.Characters
         protected PlayerType playerType;
         protected CharacterType selectedWeapons;
         protected string characterName;
-        protected int armor;
-        protected int damage;
+        internal int armor;
+        internal int damage;
         protected float delayInPreparation;
         protected float attackTime;
         protected float delayInChangingWeapons;
@@ -38,6 +39,7 @@ namespace Kosilek.Characters
         protected float delayAttackRange; // Player and AI
         protected CharacterType characterType; //AI
         internal int chanceOfAppearance; // AI
+        internal int xp; //AI
         #endregion end Main State
 
         #region List Action
@@ -94,6 +96,7 @@ namespace Kosilek.Characters
             {
                 characterType = characterData.characterType;
                 chanceOfAppearance = characterData.chanceOfAppearance;
+                xp = characterData.XP;
             }
 
         }
@@ -288,6 +291,8 @@ namespace Kosilek.Characters
         protected void StartAnimRangeAttack() => animator.SetTrigger(RANGE);
 
         internal void StartAnimRangeHIT() => animator.SetTrigger(HIT);
+
+        internal void StartAnimHealing() => animator.SetTrigger(HEALING);
         #endregion
 
         private void DamageObject()
@@ -308,9 +313,39 @@ namespace Kosilek.Characters
             LevelManager.Instance.enemy.health.Damage(damage, LevelManager.Instance.enemy.armor, PlayerType.AI);
         }
 
+        #region Drop
+        internal void DropItem(Transform transform)
+        {
+            var random = UnityEngine.Random.Range(0, 101);
+
+            if (random > 50)
+                return;
+
+            var item = ChoosingAMonster();
+            LevelManager.Instance.dropItem = Instantiate(item.gameObject, transform.position, Quaternion.identity).GetComponent<Item>();
+            CanvasManager.Instance.gameCanvas.addItemButton.gameObject.SetActive(true);
+        }
+
+        private Item ChoosingAMonster()
+        {
+            int totalChance = ContainerManager.Instance.items.Sum(pair => pair.itemData.chanceOfAppearance);
+            var randomNumber = UnityEngine.Random.Range(0f, totalChance);
+            foreach (var container in ContainerManager.Instance.items)
+            {
+                randomNumber -= container.itemData.chanceOfAppearance;
+                if (randomNumber <= 0)
+                {
+                    return container;
+                }
+            }
+            Debug.LogError("Error: Enemy is not");
+            return null;
+        }
+        #endregion end Drop
+
         #region Test
 
-        
+
         #endregion
     }
 }

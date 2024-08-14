@@ -12,3 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2585b25d95d33924abc46193684c7529, type: 3}
   m_Name: FireFlower
   m_EditorClassIdentifier: 
+  playerType: 1
+  characterName: 
+  health: 16
+  armor: 2
+  damage: 2
+  delayInPreparation: 2
+  attackTime: 2
+  delayInChangingWeapons: 0
+  delayAttackMeele: 1
+  delayAttackRange: 0
+  characterType: 0
+  chanceOfAppearance: 60
+  npcType: 0
+  XP: 3

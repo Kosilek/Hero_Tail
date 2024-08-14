@@ -10,19 +10,20 @@ namespace Kosilek.Data
     public class CharacterData : ScriptableObject
     {
         #region MainValues
-        internal PlayerType playerType;
-        internal string characterName;
-        internal int health;
-        internal int armor;
-        internal int damage;
-        internal float delayInPreparation;
-        internal float attackTime;
-        internal float delayInChangingWeapons;
-        internal float delayAttackMeele; //Player and AI
-        internal float delayAttackRange; // Player and AI
-        internal CharacterType characterType; //AI
-        internal int chanceOfAppearance; // AI
-        internal NPCType npcType; //AI
+        public PlayerType playerType;
+        public string characterName;
+        public int health;
+        public int armor;
+        public int damage;
+        public float delayInPreparation;
+        public float attackTime;
+        public float delayInChangingWeapons;
+        public float delayAttackMeele; //Player and AI
+        public float delayAttackRange; // Player and AI
+        public CharacterType characterType; //AI
+        public int chanceOfAppearance; // AI
+        public NPCType npcType; //AI
+        public int XP; //AI
         #endregion
     }
 
@@ -40,31 +41,55 @@ namespace Kosilek.Data
 
         public override void OnInspectorGUI()
         {
-            characterData.playerType = (PlayerType)EditorGUILayout.EnumPopup("Player Type", characterData.playerType);
-            characterData.characterName = EditorGUILayout.TextField("Name", characterData.characterName);
-            characterData.health = EditorGUILayout.IntField("Health", characterData.health);
-            characterData.armor = EditorGUILayout.IntField("Armor", characterData.armor);
-            characterData.damage = EditorGUILayout.IntField("Damage", characterData.damage);
-            characterData.delayInPreparation = EditorGUILayout.FloatField("Delay In Preparation", characterData.delayInPreparation);
-            characterData.attackTime = EditorGUILayout.FloatField("Attack Time", characterData.attackTime);
+            serializedObject.Update();
+            SerializedProperty playerType = serializedObject.FindProperty("playerType");
+            EditorGUILayout.PropertyField(playerType);
+            SerializedProperty characterName = serializedObject.FindProperty("characterName");
+            EditorGUILayout.PropertyField(characterName);
+            SerializedProperty health = serializedObject.FindProperty("health");
+            EditorGUILayout.PropertyField(health);
+            SerializedProperty armor = serializedObject.FindProperty("armor");
+            EditorGUILayout.PropertyField(armor);
+            SerializedProperty damage = serializedObject.FindProperty("damage");
+            EditorGUILayout.PropertyField(damage);
+            SerializedProperty delayInPreparation = serializedObject.FindProperty("delayInPreparation");
+            EditorGUILayout.PropertyField(delayInPreparation);
+            SerializedProperty attackTime = serializedObject.FindProperty("attackTime");
+            EditorGUILayout.PropertyField(attackTime);
 
             if (characterData.playerType == PlayerType.AI)
             {
-                characterData.characterType = (CharacterType)EditorGUILayout.EnumPopup("Character Type", characterData.characterType);
-                characterData.npcType = (NPCType)EditorGUILayout.EnumPopup("NPC TYPE", characterData.npcType);
-                characterData.chanceOfAppearance = EditorGUILayout.IntField("Chance Of Appearance", characterData.chanceOfAppearance);
+                SerializedProperty characterType = serializedObject.FindProperty("characterType");
+                EditorGUILayout.PropertyField(characterType);
+                SerializedProperty npcType = serializedObject.FindProperty("npcType");
+                EditorGUILayout.PropertyField(npcType);
+                SerializedProperty chanceOfAppearance = serializedObject.FindProperty("chanceOfAppearance");
+                EditorGUILayout.PropertyField(chanceOfAppearance);
+                SerializedProperty XP = serializedObject.FindProperty("XP");
+                EditorGUILayout.PropertyField(XP);
 
                 if (characterData.characterType == CharacterType.Melee)
-                    characterData.delayAttackMeele = EditorGUILayout.FloatField("Meele Delay", characterData.delayAttackMeele);
+                {
+                    SerializedProperty delayAttackMeele = serializedObject.FindProperty("delayAttackMeele");
+                    EditorGUILayout.PropertyField(delayAttackMeele);
+                }
                 else
-                    characterData.delayAttackRange = EditorGUILayout.FloatField("Range Delay", characterData.delayAttackRange);
+                {
+                    SerializedProperty delayAttackRange = serializedObject.FindProperty("delayAttackRange");
+                    EditorGUILayout.PropertyField(delayAttackRange);
+                }
+              
             }
             else
             {
-                characterData.delayInChangingWeapons = EditorGUILayout.FloatField("Delay In Changing Weapons", characterData.delayInChangingWeapons);
-                characterData.delayAttackMeele = EditorGUILayout.FloatField("Meele Delay", characterData.delayAttackMeele);
-                characterData.delayAttackRange = EditorGUILayout.FloatField("Range Delay", characterData.delayAttackRange);
+                SerializedProperty delayInChangingWeapons = serializedObject.FindProperty("delayInChangingWeapons");
+                EditorGUILayout.PropertyField(delayInChangingWeapons);
+                SerializedProperty delayAttackMeele = serializedObject.FindProperty("delayAttackMeele");
+                EditorGUILayout.PropertyField(delayAttackMeele);
+                SerializedProperty delayAttackRange = serializedObject.FindProperty("delayAttackRange");
+                EditorGUILayout.PropertyField(delayAttackRange);
             }
+            serializedObject.ApplyModifiedProperties();
         }
     }
 #endif

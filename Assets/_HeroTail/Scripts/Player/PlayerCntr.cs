@@ -11,6 +11,10 @@ namespace Kosilek.Characters
 {
     public class PlayerCntr : Character
     {
+        #region SriptsComponent
+        [SerializeField] internal XP exp;
+        #endregion end SriptsComponent
+
         #region Const
         private const float DELAY_CHANGING_WEAPON = 2f;
         #endregion end Const

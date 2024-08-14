@@ -12,3 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2585b25d95d33924abc46193684c7529, type: 3}
   m_Name: Player
   m_EditorClassIdentifier: 
+  playerType: 0
+  characterName: 
+  health: 30
+  armor: 1
+  damage: 10
+  delayInPreparation: 2
+  attackTime: 2
+  delayInChangingWeapons: 2
+  delayAttackMeele: 0.5
+  delayAttackRange: 1
+  characterType: 0
+  chanceOfAppearance: 0
+  npcType: 0
+  XP: 0

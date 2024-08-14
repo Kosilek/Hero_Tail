@@ -11,8 +11,10 @@ namespace Kosilek.Characters
 {
     public class Health : MonoBehaviour
     {
-        private int health;
-        private int maxHealth;
+        [SerializeField]
+        internal int health;
+        [SerializeField]
+        internal int maxHealth;
 
         [SerializeField] HealthUI healthUI;
 
@@ -67,6 +69,8 @@ namespace Kosilek.Characters
                 yield return new WaitForSeconds(.5f);
                 if (playerType == PlayerType.AI)
                 {
+                    LevelManager.Instance.player.exp.GetXp(LevelManager.Instance.enemy.xp);
+                    LevelManager.Instance.enemy.DropItem(LevelManager.Instance.enemy.transform);
                     LevelManager.Instance.DestroyCharacters(LevelManager.Instance.enemy);
                 }
                 else

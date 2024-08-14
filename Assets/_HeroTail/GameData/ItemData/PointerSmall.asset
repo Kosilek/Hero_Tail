@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb13988b585aaf43a5099186e00673c, type: 3}
+  m_Name: PointerSmall
+  m_EditorClassIdentifier: 
+  itemType: 5
+  pointerType: 0
+  characterType: 0
+  armor: 0
+  health: 0
+  healing: 10
+  damage: 0
+  delayOfAttak: 0
+  isStacked: 1
+  maxStacked: 99
+  sprite: {fileID: 21300000, guid: 5245caf9350aa744c8c2476af4f31fc3, type: 3}
+  nameItem: 
+  id: 5
+  isCharacterItem: 0
+  chanceOfAppearance: 80

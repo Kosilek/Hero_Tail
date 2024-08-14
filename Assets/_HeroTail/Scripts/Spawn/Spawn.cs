@@ -43,7 +43,6 @@ public class Spawn : MonoBehaviour
             randomNumber -= container.chanceOfAppearance;
             if (randomNumber <= 0)
             {
-                Debug.Log("Random = " + container.chanceOfAppearance + " name + " + container.enemy.name);
                 return container.enemy;
             }
         }
